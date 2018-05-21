@@ -1,12 +1,9 @@
-import javafx.util.Pair;
-
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -38,14 +35,8 @@ public class Main {
             Path messagePath = Paths.get(message);
             messageBytes = Files.readAllBytes(messagePath);
         }
-
-
-//        Path messagePath = Paths.get(message);
-//        byte[] messageBytes = Files.readAllBytes(messagePath);
-
         RandomAccessFile file = new RandomAccessFile(path, "rw");
         workWithJpegFile(file, messageBytes, operation);
-
     }
 
     private void workWithJpegFile(RandomAccessFile file, byte[] message, String operation) throws IOException {
@@ -76,11 +67,10 @@ public class Main {
                 } else {
                     System.out.println("Invalid data : message more than available container \nsize of message: " + (message.length + 2) +
                             "\navailable size in container: " + availableSize);
-//                    return;
                 }
             } else {
                 byte[] resultMessage = readInformation(file);
-                if (resultMessage == null){
+                if (resultMessage == null) {
                     System.out.println("Container has not information!");
                     return;
                 }
@@ -89,20 +79,6 @@ public class Main {
                 }
                 System.out.println("Information are got from container and written to resultMessage!");
             }
-            /*if (linkToThumbnail == 0) {
-                System.out.println("File doesn't contain thumbnail sector!");
-            } else {
-                Pair<Long, Long> links = getLinks(file, linkToThumbnail, message);
-                if (Objects.equals(operation, "1")) {
-                    writeInformation(file, links, message);
-                    System.out.println("Information are written!");
-                } else {
-                    byte[] tmpMessage = readInformation(file, links);
-                    try (FileOutputStream fos = new FileOutputStream("resultMessage")){
-                        fos.write(tmpMessage);
-                    }
-                }
-            }*/
         }
     }
 
@@ -113,8 +89,6 @@ public class Main {
         int messagePointer = 0;
         byte[] bytes = new byte[2];
         file.read(bytes, 0, 2);
-        int length = Integer.parseInt(bytesToHex(bytes), 16);
-        //System.out.println(length);
         byte[] byteEXIF = new byte[6];
         file.read(byteEXIF, 0, 6);
         linkToAlign = file.getFilePointer();
@@ -137,18 +111,14 @@ public class Main {
             byte[] name = new byte[2];
             file.read(name, 0, 2);
             reverseArray(name);
-//            System.out.println(bytesToHex(name));
 
             byte[] type = new byte[2];
             file.read(type, 0, 2);
             reverseArray(type);
-//            System.out.println(bytesToHex(type));
-
 
             byte[] numberOfComponents = new byte[4];
             file.read(numberOfComponents, 0, 4);
             reverseArray(numberOfComponents);
-//            System.out.println(bytesToHex(numberOfComponents));
 
             byte[] value = new byte[2];
             long pointer = file.getFilePointer();
@@ -159,20 +129,14 @@ public class Main {
             reverseArray(trash);
             long endPointer = file.getFilePointer();
             if (Objects.equals(bytesToHex(name), "0100")) {
-//                reverseArray(value);
                 sizeOfMessage = Long.parseLong(bytesToHex(value), 16);
                 resultMessage = new byte[(int) sizeOfMessage];
-                if (trash[1] != 3){
+                if (trash[1] != 3) {
                     return null;
                 }
-//                file.seek(pointer);
-//                for (int j = 4; j >= 0; j -= 2) {
-//                    file.write(Integer.parseInt(sizeInHex.substring(j, j + 2), 16));
-//                }
                 file.seek(endPointer);
             } else if (!Objects.equals(bytesToHex(name), "8769")) {
                 if (Integer.parseInt(bytesToHex(numberOfComponents), 16) == 1) {
-                    //
                     file.seek(pointer);
                     byte[] buff = new byte[4];
                     file.read(buff, 0, 4);
@@ -198,12 +162,9 @@ public class Main {
         int messagePointer = 0;
         byte[] bytes = new byte[2];
         file.read(bytes, 0, 2);
-        int length = Integer.parseInt(bytesToHex(bytes), 16);
-        //System.out.println(length);
         byte[] byteEXIF = new byte[6];
         file.read(byteEXIF, 0, 6);
         linkToAlign = file.getFilePointer();
-        //System.out.println(linkToAlign);
         file.read(bytes, 0, 2);
         file.read(bytes, 0, 2);
         byte[] byteOffsetFirstIFD = new byte[4];
@@ -222,18 +183,14 @@ public class Main {
             byte[] name = new byte[2];
             file.read(name, 0, 2);
             reverseArray(name);
-//            System.out.println(bytesToHex(name));
 
             byte[] type = new byte[2];
             file.read(type, 0, 2);
             reverseArray(type);
-//            System.out.println(bytesToHex(type));
-
 
             byte[] numberOfComponents = new byte[4];
             file.read(numberOfComponents, 0, 4);
             reverseArray(numberOfComponents);
-//            System.out.println(bytesToHex(numberOfComponents));
 
             byte[] value = new byte[2];
             long pointer = file.getFilePointer();
@@ -252,7 +209,6 @@ public class Main {
                 file.seek(endPointer);
             } else if (!Objects.equals(bytesToHex(name), "8769")) {
                 if (Integer.parseInt(bytesToHex(numberOfComponents), 16) == 1) {
-                    //
                     file.seek(pointer);
                     for (int j = 0; j < 4; j++) {
                         if (messagePointer < message.length) {
@@ -274,12 +230,9 @@ public class Main {
         file.seek(startOfStructure);
         byte[] bytes = new byte[2];
         file.read(bytes, 0, 2);
-        int length = Integer.parseInt(bytesToHex(bytes), 16);
-        //System.out.println(length);
         byte[] byteEXIF = new byte[6];
         file.read(byteEXIF, 0, 6);
         linkToAlign = file.getFilePointer();
-        //System.out.println(linkToAlign);
         file.read(bytes, 0, 2);
         file.read(bytes, 0, 2);
         byte[] byteOffsetFirstIFD = new byte[4];
@@ -298,21 +251,16 @@ public class Main {
             byte[] name = new byte[2];
             file.read(name, 0, 2);
             reverseArray(name);
-            //System.out.println(bytesToHex(name));
 
             byte[] type = new byte[2];
             file.read(type, 0, 2);
             reverseArray(type);
-            //System.out.println(bytesToHex(type));
-
 
             byte[] numberOfComponents = new byte[4];
             file.read(numberOfComponents, 0, 4);
             reverseArray(numberOfComponents);
-            //System.out.println(bytesToHex(numberOfComponents));
 
             byte[] value = new byte[2];
-            long pointer = file.getFilePointer();
             file.read(value, 0, 2);
             reverseArray(value);
             byte[] trash = new byte[2];
@@ -322,8 +270,6 @@ public class Main {
             if (!Objects.equals(bytesToHex(name), "8769")) {
                 if (Integer.parseInt(bytesToHex(numberOfComponents), 16) == 1) {
                     result += 4;
-//                    file.seek(pointer);
-//                    file.write("le".getBytes());
                     file.seek(endPointer);
                 }
             }
@@ -346,11 +292,9 @@ public class Main {
         byte[] bytes = new byte[2];
         file.read(bytes, 0, 2);
         int length = Integer.parseInt(bytesToHex(bytes), 16);
-        //System.out.println(length);
         file.seek(startOfStructure);
         byte[] structure = new byte[length];
         file.read(structure, 0, length);
-        //System.out.println(bytesToHex(structure));
         return 0;
     }
 
